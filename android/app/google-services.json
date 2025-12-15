@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "557642524488",
+    "project_id": "aptcodertask",
+    "storage_bucket": "aptcodertask.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:557642524488:android:d427888d462f1b10ebf57d",
+        "android_client_info": {
+          "package_name": "com.example.aptcoder_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNMz-xZwNFs_HnADifsF-oieTbscDMNDM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
