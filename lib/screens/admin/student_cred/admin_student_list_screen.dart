@@ -98,14 +98,22 @@ class _AdminStudentsScreenState extends State<AdminStudentsScreen> {
                       child: IconButton(
                         icon: const Icon(Icons.person_add_rounded),
                         onPressed: () async {
+                          // Capture bloc reference before navigation
+                          final studentBloc = context.read<AdminStudentBloc>();
+                          
                           await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const AdminCreateStudentScreen(),
+                              builder: (_) => BlocProvider.value(
+                                value: studentBloc,
+                                child: const AdminCreateStudentScreen(),
+                              ),
                             ),
                           );
+                          
+                          // Use captured reference instead of context.read
                           if (mounted) {
-                            context.read<AdminStudentBloc>().add(LoadStudents());
+                            studentBloc.add(LoadStudents());
                           }
                         },
                         color: Colors.green.shade700,
@@ -275,19 +283,24 @@ class _AdminStudentsScreenState extends State<AdminStudentsScreen> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () async {
+                                    // Capture bloc reference before navigation
+                                    final studentBloc = context.read<AdminStudentBloc>();
+                                    
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) =>
-                                            AdminStudentDetailScreen(
-                                          studentId: student['uid'],
+                                        builder: (_) => BlocProvider.value(
+                                          value: studentBloc,
+                                          child: AdminStudentDetailScreen(
+                                            studentId: student['uid'],
+                                          ),
                                         ),
                                       ),
                                     );
+                                    
+                                    // Use captured reference instead of context.read
                                     if (mounted) {
-                                      context
-                                          .read<AdminStudentBloc>()
-                                          .add(LoadStudents());
+                                      studentBloc.add(LoadStudents());
                                     }
                                   },
                                   borderRadius: BorderRadius.circular(20),
@@ -380,25 +393,30 @@ class _AdminStudentsScreenState extends State<AdminStudentsScreen> {
                                                 BorderRadius.circular(12),
                                           ),
                                           onSelected: (value) async {
+                                            // Capture bloc reference before navigation
+                                            final studentBloc = context.read<AdminStudentBloc>();
+                                            
                                             if (value == 'edit') {
                                               await Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      AdminEditStudentScreen(
-                                                    student: student,
+                                                  builder: (_) => BlocProvider.value(
+                                                    value: studentBloc,
+                                                    child: AdminEditStudentScreen(
+                                                      student: student,
+                                                    ),
                                                   ),
                                                 ),
                                               );
+                                              
+                                              // Use captured reference instead of context.read
                                               if (mounted) {
-                                                context
-                                                    .read<AdminStudentBloc>()
-                                                    .add(LoadStudents());
+                                                studentBloc.add(LoadStudents());
                                               }
                                             }
 
                                             if (value == 'delete') {
-                                              _confirmDelete(student['uid']);
+                                              _confirmDelete(context, student['uid']);
                                             }
                                           },
                                           itemBuilder: (_) => [
@@ -451,10 +469,14 @@ class _AdminStudentsScreenState extends State<AdminStudentsScreen> {
     );
   }
 
-  void _confirmDelete(String id) {
+  void _confirmDelete(BuildContext context, String id) {
+    // Capture the bloc reference before showing dialog
+    final studentBloc = context.read<AdminStudentBloc>();
+    final dashboardBloc = context.read<AdminDashboardBloc>();
+    
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Row(
           children: [
@@ -468,7 +490,7 @@ class _AdminStudentsScreenState extends State<AdminStudentsScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(
               "Cancel",
               style: TextStyle(color: Colors.grey[600]),
@@ -483,9 +505,15 @@ class _AdminStudentsScreenState extends State<AdminStudentsScreen> {
               ),
             ),
             onPressed: () {
-              context.read<AdminStudentBloc>().add(DeleteStudent(id));
-              Navigator.pop(context);
-              context.read<AdminDashboardBloc>().add(LoadAdminDashboard());
+              // Use captured bloc references instead of context.read
+              studentBloc.add(DeleteStudent(id));
+              dashboardBloc.add(LoadAdminDashboard());
+              Navigator.pop(dialogContext);
+              
+              // Reload students list after deletion
+              if (mounted) {
+                studentBloc.add(LoadStudents());
+              }
             },
             child: const Text("Delete"),
           ),
@@ -495,7 +523,6 @@ class _AdminStudentsScreenState extends State<AdminStudentsScreen> {
   }
 }
 
-// Add this class if you don't have it already
 class AppGradients {
   static const LinearGradient adminGradient = LinearGradient(
     begin: Alignment.topLeft,

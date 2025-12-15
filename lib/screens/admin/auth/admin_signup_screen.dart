@@ -19,7 +19,8 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
   final _passwordCtrl = TextEditingController();
   final _authService = AuthService();
   final _userService = UserService();
-  bool _isLoading = false;
+bool _isEmailLoading = false;
+bool _isGoogleLoading = false;
   bool _obscurePassword = true;
 
   @override
@@ -143,7 +144,7 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                   _buildPrimaryButton(
                     title: "Sign Up",
                     onTap: _emailSignup,
-                    isLoading: _isLoading,
+                    isLoading: _isEmailLoading,
                   ),
                   const SizedBox(height: 24),
 
@@ -167,7 +168,7 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                   const SizedBox(height: 24),
 
                   // Google Sign In Button
-                  googleSignInButton(onTap: _isLoading ? () {} : _googleSignup),
+                  googleSignInButton(onTap: _isGoogleLoading ? () {} : _googleSignup),
                   const SizedBox(height: 32),
 
                   // Login Link
@@ -208,7 +209,7 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
   Future<void> _emailSignup() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    setState(() => _isEmailLoading = true);
 
     try {
       final user = await _authService.signUpWithEmail(
@@ -247,13 +248,13 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
       );
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => _isEmailLoading = false);
       }
     }
   }
 
   Future<void> _googleSignup() async {
-    setState(() => _isLoading = true);
+    setState(() => _isGoogleLoading = true);
 
     try {
       final user = await _authService.signInWithGoogle();
@@ -313,7 +314,7 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
       );
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => _isGoogleLoading = false);
       }
     }
   }

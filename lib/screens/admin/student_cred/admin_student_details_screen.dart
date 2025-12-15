@@ -57,6 +57,7 @@ class _AdminStudentDetailScreenState extends State<AdminStudentDetailScreen> {
               }
 
               if (state is AdminStudentDetailLoaded) {
+                
                 final s = state.student;
                 final courses = List.from(s['enrolledCourses'] ?? []);
 

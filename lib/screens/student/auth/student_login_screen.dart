@@ -22,7 +22,8 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
   final _passwordCtrl = TextEditingController();
   final _authService = AuthService();
   final _userService = UserService();
-  bool _isLoading = false;
+bool _isEmailLoading = false;
+bool _isGoogleLoading = false;
   bool _obscurePassword = true;
 
   void _goToStudentDashboard(BuildContext context, String studentId) {
@@ -151,7 +152,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: _isLoading ? null : _forgotPassword,
+                        onPressed: _isEmailLoading ? null : _forgotPassword,
                         child: ShaderMask(
                           shaderCallback: (bounds) => LinearGradient(
                             colors: [
@@ -175,7 +176,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                     _buildPrimaryButton(
                       title: "Login",
                       onTap: _emailLogin,
-                      isLoading: _isLoading,
+                      isLoading: _isEmailLoading,
                     ),
                     const SizedBox(height: 24),
 
@@ -200,7 +201,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
 
                     // Google Sign In Button
                     googleSignInButton(
-                      onTap: _isLoading ? () {} : _googleLogin,
+                      onTap: _isGoogleLoading ? () {} : _googleLogin,
                     ),
                     const SizedBox(height: 32),
                   ],
@@ -216,7 +217,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
   Future<void> _emailLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    setState(() => _isEmailLoading = true);
 
     try {
       final user = await _authService.signInWithEmail(
@@ -269,13 +270,13 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
       );
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => _isEmailLoading = false);
       }
     }
   }
 
   Future<void> _googleLogin() async {
-    setState(() => _isLoading = true);
+    setState(() => _isGoogleLoading = true);
 
     try {
       final user = await _authService.signInWithGoogle();
@@ -336,7 +337,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
       );
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => _isGoogleLoading = false);
       }
     }
   }

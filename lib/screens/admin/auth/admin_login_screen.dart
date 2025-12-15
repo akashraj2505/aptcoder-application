@@ -19,7 +19,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   final _passwordCtrl = TextEditingController();
   final _authService = AuthService();
   final _userService = UserService();
-  bool _isLoading = false;
+bool _isEmailLoading = false;
+bool _isGoogleLoading = false;
   bool _obscurePassword = true;
 
   @override
@@ -125,7 +126,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: _isLoading ? null : _forgotPassword,
+                      onPressed: _isEmailLoading ? null : _forgotPassword,
                       child: Text(
                         "Forgot Password?",
                         style: TextStyle(
@@ -141,7 +142,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   _buildPrimaryButton(
                     title: "Login",
                     onTap: _emailLogin,
-                    isLoading: _isLoading,
+                    isLoading: _isEmailLoading,
                   ),
                   const SizedBox(height: 24),
 
@@ -165,7 +166,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   const SizedBox(height: 24),
 
                   // Google Sign In Button
-                  googleSignInButton(onTap: _isLoading ? () {} : _googleLogin),
+                  googleSignInButton(onTap: _isGoogleLoading ? () {} : _googleLogin),
                   const SizedBox(height: 32),
 
                   // Signup Link
@@ -206,7 +207,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   Future<void> _emailLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    setState(() => _isEmailLoading = true);
 
     try {
       final user = await _authService.signInWithEmail(
@@ -259,13 +260,13 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       );
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => _isEmailLoading = false);
       }
     }
   }
 
   Future<void> _googleLogin() async {
-    setState(() => _isLoading = true);
+    setState(() => _isGoogleLoading = true);
 
     try {
       final user = await _authService.signInWithGoogle();
@@ -326,7 +327,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       );
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => _isGoogleLoading = false);
       }
     }
   }
